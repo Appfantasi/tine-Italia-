@@ -1,0 +1,27 @@
+# Tine interface text. Graph names, paths and inserted syntax in variables stay unchanged.
+editor-today = Oggi
+editor-last-7-days = Ultimi 7 giorni
+editor-last-30-days = Ultimi 30 giorni
+editor-next-7-days = Prossimi 7 giorni
+editor-this-week = Questa settimana
+editor-could-not-load-legacy-link-preference = Impossibile caricare la preferenza dei link legacy.
+editor-could-not-save-migrated-link-autocomplete-policy = Impossibile salvare la policy di completamento automatico dei link migrata.
+editor-could-not-load-link-autocomplete-policy = Impossibile caricare la policy di completamento automatico dei link.
+editor-aliases = Alias
+editor-other-names-this-page-answers-to-in-links-comma-separated = Altri nomi con cui questa pagina viene chiamata nei [[links]] (separati da virgola)
+editor-tags = Tag
+editor-page-level-tags-comma-separated = Tag a livello di pagina (separati da virgola)
+editor-display-title = Titolo visualizzato
+editor-override-the-shown-title-the-file-name-stays-the-same = Sovrascrivi il titolo mostrato (il nome del file rimane invariato)
+editor-icon = Icona
+editor-an-emoji-character-shown-with-the-title = Un'emoji/carattere mostrato insieme al titolo
+editor-public = Pubblica
+editor-include-this-page-when-exporting-publishing-public-pages = Includi questa pagina quando esporti/pubblichi pagine pubbliche
+editor-none = (nessuno)
+editor-contains-both-terms = contiene entrambi i termini
+editor-contains-either-term = contiene uno dei termini
+editor-contains-foo-excludes-draft = contiene foo, esclude bozza
+editor-matches-adjacent-words = corrisponde a parole adiacenti
+editor-case-sensitive-regular-expression = espressione regolare sensibile alle maiuscole
+editor-link = Link
+editor-markdown-link = Link Markdown

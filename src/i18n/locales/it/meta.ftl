@@ -1,0 +1,2 @@
+-locale-name = Italiano
+-locale-matches = it, it-IT, it-CH, it-SM, it-VA

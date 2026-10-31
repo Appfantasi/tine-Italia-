@@ -1,0 +1,44 @@
+# Remaining interface text (GH #107). Inline code and syntax stay unchanged.
+page-open-failed = Impossibile aprire questa pagina: <code>{ $error }</code>
+page-no-journals = Nessuna voce del diario trovata in questo grafo.
+# Keep the graph directory names unchanged; the link opens the graph picker.
+page-no-journals-hint = Assicurati di aver aperto un grafo Logseq (una cartella con <code>journals/</code> + <code>pages/</code>). Usa <a>{ page-ui-open-graph }</a>
+page-guide-read-only = Pagina Guida inclusa - sola lettura e non scritta nel tuo grafo.
+page-ui-could-not-load-journal-feed-it-will-retry-when = Impossibile caricare il feed del diario. Ritenterà quando la vista si aggiornerà.
+page-ui-tine-did-not-modify-the-file-try-reopening-or = Tine non ha modificato il file. Prova a riaprirlo o controlla il file su disco.
+page-ui-loading-page = Caricamento pagina…
+page-ui-open-graph = Apri grafo…
+page-ui-rename-failed = Rinominare non riuscito: { $value1 }
+page-ui-bundled-guide-page = Pagina Guida inclusa
+page-ui-double-click-to-rename-shift-click-sidebar-ctrl-middle = Doppio clic per rinominare (shift-click → barra laterale, ctrl/middle-click → nuova scheda, alt-click → altro pannello)
+page-ui-shift-click-to-open-in-sidebar-ctrl-middle-click = Shift-click per aprire nella barra laterale, ctrl/middle-click → nuova scheda, alt-click → altro pannello
+page-ui-copy-the-guide-into-your-graph = Copia la guida nel tuo grafo
+page-ui-page-actions = Azioni pagina
+page-ui-unfavorite = Rimuovi dai preferiti
+page-ui-add-to-favorites = Aggiungi ai preferiti
+page-ui-also-known-as-other-names-that-link-here = Anche noto come — altri nomi che rimandano qui
+page-ui-aka = detto anche
+page-ui-tine-can-t-reproduce-this-org-file-byte-for = Tine non può riprodurre questo file <code>.org</code> byte-per-byte, quindi è mostrato in sola lettura per evitare di corromperlo. Modificalo in Logseq/Emacs.
+page-ui-read-only-this-org-file-uses-a-structure-tine = Sola lettura — questo <code>.org</code> usa una struttura che Tine non può ancora preservare in modo sicuro, quindi non verrà modificato qui.
+page-ui-click-the-text-to-turn-it-into-an-editable = Clicca il testo per trasformarlo in un blocco modificabile
+page-ui-focus-or-create-a-trailing-block = Metti a fuoco o crea un blocco finale
+page-ui-click-to-continue-writing-below-this-page = Clicca per continuare a scrivere sotto questa pagina
+page-ui-add-block = + Aggiungi blocco
+page-ui-hide-tag-table = Nascondi tabella tag
+page-ui-show-tagged-blocks-as-a-table = Mostra i blocchi taggati come tabella
+page-ui-table = ⊞ Tabella
+page-ui-tag-table-couldn-t-load = Impossibile caricare la tabella tag: { $error }
+page-ui-add-row = Aggiungi riga { $value1 }
+page-ui-move-this-day-s-unfinished-tasks-to-today = Sposta le attività non completate di questo giorno a oggi
+page-ui-carry-unfinished-tasks-today = Porta le attività non finite → oggi
+page-ui-to-today = A oggi
+page-ui-pull-unfinished-tasks-from-the-most-recent-day-that = Estrai le attività non completate dal giorno più recente che ha contenuto
+page-ui-carry-from-previous-day = Porta dal giorno precedente
+page-ui-previous = Precedente
+page-ui-pull-unfinished-tasks-from-the-last-days-change-n = Estrai le attività non completate negli ultimi { $value1 } giorni (modifica N nelle Impostazioni)
+page-ui-carry-last-days = Porta ultimi { $value1 } giorni
+page-ui-last-d = Ultimi { $value1 }d
+
+page-prose-key-grammar = Le chiavi possono contenere solo lettere, numeri, _, ., / o -, così ogni lettore Tine le ritrova.
+page-prose-key-managed = "{ $key }" è gestita da Tine e non può essere impostata qui.
+page-prose-key-exists = "{ $key }" esiste già; modifica la sua riga sopra.

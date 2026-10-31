@@ -1,0 +1,13 @@
+delete-failed = Eliminazione fallita: { $reason }
+delete-reason-rewrite = Il grafo è in fase di riscrittura. Riprova quando avrà terminato.
+delete-reason-target = L'obiettivo di questa pagina è cambiato; riapri il menu azioni della pagina.
+delete-reason-read-only = Questa pagina è di sola lettura.
+delete-reason-conflict = Il conflitto di salvataggio della pagina non è stato risolto.
+delete-reason-storage = { $reason }
+delete-reason-unsaved = Impossibile salvare “{ $name }”; la pagina non è stata eliminata.
+delete-reason-no-host = La sessione di archiviazione del grafo non è disponibile.
+delete-reason-waiting = “{ $name }” è ancora in fase di salvataggio; prova a eliminarla di nuovo fra un istante.
+delete-reason-pending = “{ $name }” verrà eliminata non appena sarà possibile scrivere il suo file; Tine continua a riprovare.
+delete-reason-uncertain = Tine non ha potuto confermare che “{ $name }” sia stata eliminata; continua a riprovare.
+delete-reason-superseded = “{ $name }” è stata modificata da una modifica successiva, quindi non è stata eliminata.
+delete-reason-refused = L'archiviazione ha rifiutato l'eliminazione senza fornire una motivazione.

@@ -2741,5 +2741,6 @@ export type MessageId = keyof MessageArgs;
 /** The shipped locales, source first: tag, endonym, and the language tags each serves. */
 export const LOCALES: readonly { readonly tag: string; readonly name: string; readonly matches: readonly string[] }[] = [
   { tag: "en", name: "English", matches: ["en"] },
+  { tag: "it", name: "Italiano", matches: ["it","it-IT","it-CH","it-SM","it-VA"] },
   { tag: "zh-CN", name: "简体中文", matches: ["zh-CN","zh","zh-Hans","zh-Hans-CN","zh-SG","zh-Hans-SG"] },
 ];
