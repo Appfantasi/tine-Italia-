@@ -53,8 +53,7 @@ if (-not $SkipNpmInstall) {
 # Tauri runs the repository's beforeBuildCommand (npm run build), which checks
 # the localization catalogs and bundles every locale, including Italian.
 Invoke-CheckedCommand -Name 'npm' -Arguments @('run', 'tauri', '--', 'build', '--bundles', 'nsis')
-
-$bundleDir = Join-$bundleDir = Join-Path $repoRoot 'target/release/bundle/nsis'
+$bundleDir = Join-Path $repoRoot 'target/release/bundle/nsis'
 $installers = @(Get-ChildItem -Path $bundleDir -Filter '*.exe' -File -ErrorAction SilentlyContinue)
 if ($installers.Count -eq 0) {
     throw "Tauri finished but no NSIS installer was found in '$bundleDir'."
