@@ -360,7 +360,7 @@ export function MobileKeyboardToolbar(): JSX.Element {
     // The toolbar belongs to the mobile shell, not a particular editor DOM node.
     // Preserve its buttons and horizontal scroll through bridge handoffs; only
     // its visibility follows focus/keyboard state.
-    <Show when={isMobilePlatform}>
+    <Show when={isMobilePlatform || desktopFocused()}>
       <div
         ref={toolbarRef}
         class="mobile-keyboard-toolbar"
