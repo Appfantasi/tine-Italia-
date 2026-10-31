@@ -226,7 +226,9 @@ export function MobileKeyboardToolbar(): JSX.Element {
   });
 
   const visible = () =>
-    (!!focusedEditorCommandBridge() && (keyboardVisible() || focusedFallback())) || hideGesture();
+    (!!focusedEditorCommandBridge() &&
+      (isMobilePlatform ? (keyboardVisible() || focusedFallback()) : desktopFocused())) ||
+    (isMobilePlatform && hideGesture());
 
   // Publish the toolbar's on-screen top as a CSS var so the fixed help "?" FAB
   // (and any other bottom-anchored chrome) can lift ABOVE it instead of
