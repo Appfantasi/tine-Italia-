@@ -118,6 +118,7 @@ export function MobileKeyboardToolbar(): JSX.Element {
   const [dockTop, setDockTop] = createSignal(typeof window !== "undefined" ? window.innerHeight : 0);
   const [keyboardVisible, setKeyboardVisible] = createSignal(false);
   const [focusedFallback, setFocusedFallback] = createSignal(false);
+  const [desktopFocused, setDesktopFocused] = createSignal(false);
   let revealFrame = 0;
   // Android pads the WebView itself above the IME (MainActivity), so there the
   // keyboard looks exactly like a window resize. MainActivity reports the real
