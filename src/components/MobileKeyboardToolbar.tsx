@@ -1,3 +1,4 @@
+
 import { msg, t, render, type Msg } from "../i18n";
 import { For, Show, createEffect, createSignal, onCleanup, onMount, type JSX } from "solid-js";
 import { dispatchFocusedEditorCommand, blurFocusedEditor, focusedEditorCommandBridge, type MobileEditorCommandId } from "../editorCommandBridge";
@@ -44,8 +45,9 @@ const ACTIONS: ToolbarAction[] = [
 ];
 
 const KEYBOARD_GAP_THRESHOLD = 48;
+
 /** Dispatched on window by Android's MainActivity with `detail: true|false`
- *  whenever the soft keyboard's visibility changes (GH #716). */
+ * whenever the soft keyboard's visibility changes (GH #716). */
 export const NATIVE_IME_EVENT = "tine-ime";
 const EDITOR_TOOLBAR_MARGIN = 8;
 
@@ -60,9 +62,7 @@ function viewportKeyboardTop(): number {
 }
 
 /** Scroll the focused block editor's nearest scroller (or the window) just enough
- *  that the editor's bottom sits 8px above `toolbarTop` (GH #384). Returns true
- *  only when it scrolled; a non-editor focus or an already-visible editor is a
- *  no-op returning false. O(1) layout reads. */
+ * that the editor's bottom sits 8px above `toolbarTop` (GH #384). */
 export function revealFocusedEditorAboveToolbar(toolbarTop: number): boolean {
   const editor = document.activeElement;
   if (!(editor instanceof HTMLTextAreaElement) || !editor.classList.contains("block-editor")) {
@@ -115,32 +115,31 @@ function Icon(props: { name: ToolbarIcon }): JSX.Element {
 
 export function MobileKeyboardToolbar(): JSX.Element {
   let toolbarRef: HTMLDivElement | undefined;
-  const [dockTop, setDockTop] = createSignal(typeof window !== "undefined" ? window.innerHeight : 0);
+
+  const [dockTop, setDockTop] = createSignal(
+    typeof window !== "undefined" ? window.innerHeight : 0,
+  );
   const [keyboardVisible, setKeyboardVisible] = createSignal(false);
   const [focusedFallback, setFocusedFallback] = createSignal(false);
   const [desktopFocused, setDesktopFocused] = createSignal(false);
+
   let revealFrame = 0;
-  // Android pads the WebView itself above the IME (MainActivity), so there the
-  // keyboard looks exactly like a window resize. MainActivity reports the real
-  // IME state as a `tine-ime` event; until one arrives (iOS, a browser, or an
-  // Android page that has not seen a change yet) the visual viewport decides.
   let nativeIme: boolean | undefined;
-  // A focused editor with no keyboard keeps the dock (hardware keyboard) only
-  // until a keyboard has been seen: once Back or the IME's hide key closes it,
-  // the editor stays focused but the dock yields to the navigation row, like
-  // OG's keyboardWillHide (show-toolbar? false, show-tabbar? true) (GH #716).
   let keyboardSeen = false;
 
   const updateDock = () => {
     const top = viewportKeyboardTop();
     const keyboardUp = nativeIme ?? window.innerHeight - top > KEYBOARD_GAP_THRESHOLD;
     const focused = activeEditorHasFocus();
+
     keyboardSeen = focused && (keyboardSeen || keyboardUp);
     setDockTop(top);
     setKeyboardVisible(keyboardUp);
     setFocusedFallback(focused && !keyboardSeen);
   };
-    onMount(() => {
+
+  // Desktop: show the toolbar while a block editor has focus.
+  onMount(() => {
     if (isMobilePlatform) return;
 
     const updateDesktopFocus = () => {
@@ -156,11 +155,16 @@ export function MobileKeyboardToolbar(): JSX.Element {
       window.removeEventListener("focusout", updateDesktopFocus);
     });
   });
+
+  // Mobile: follow the keyboard and keep the editor visible above the toolbar.
   onMount(() => {
     if (!isMobilePlatform) return;
+
     const vv = window.visualViewport;
+
     const scheduleEditorReveal = () => {
       if (revealFrame) return;
+
       revealFrame = requestAnimationFrame(() => {
         revealFrame = 0;
         if (toolbarRef && visible()) {
@@ -168,21 +172,30 @@ export function MobileKeyboardToolbar(): JSX.Element {
         }
       });
     };
+
     const updateViewport = () => {
       updateDock();
       scheduleEditorReveal();
     };
+
     const updateAfterFocusChange = () => setTimeout(updateViewport, 0);
+
     const revealAfterEditorInput = (event: Event) => {
-      if (event.target instanceof HTMLTextAreaElement && event.target.classList.contains("block-editor")) {
+      if (
+        event.target instanceof HTMLTextAreaElement &&
+        event.target.classList.contains("block-editor")
+      ) {
         scheduleEditorReveal();
       }
     };
+
     const updateFromNativeIme = (event: Event) => {
       nativeIme = (event as CustomEvent<unknown>).detail === true;
       updateViewport();
     };
+
     updateDock();
+
     window.addEventListener(NATIVE_IME_EVENT, updateFromNativeIme);
     vv?.addEventListener("resize", updateViewport);
     vv?.addEventListener("scroll", updateViewport);
@@ -190,6 +203,7 @@ export function MobileKeyboardToolbar(): JSX.Element {
     window.addEventListener("focusin", updateAfterFocusChange);
     window.addEventListener("focusout", updateAfterFocusChange);
     document.addEventListener("input", revealAfterEditorInput, true);
+
     onCleanup(() => {
       window.removeEventListener(NATIVE_IME_EVENT, updateFromNativeIme);
       vv?.removeEventListener("resize", updateViewport);
@@ -198,6 +212,7 @@ export function MobileKeyboardToolbar(): JSX.Element {
       window.removeEventListener("focusin", updateAfterFocusChange);
       window.removeEventListener("focusout", updateAfterFocusChange);
       document.removeEventListener("input", revealAfterEditorInput, true);
+
       if (revealFrame) cancelAnimationFrame(revealFrame);
     });
   });
@@ -207,54 +222,56 @@ export function MobileKeyboardToolbar(): JSX.Element {
     if (isMobilePlatform) queueMicrotask(updateDock);
   });
 
-  // GH #336: the hide button's pointerdown blurs the editor, which drops the
-  // keyboard and would unmount this toolbar MID-GESTURE — Android then delivers
-  // the gesture's synthesized pointerup/click to whatever moved underneath
-  // ("touch-through" onto the page). Stay mounted until the trailing click is
-  // consumed here, with a short safety window for pointercancel/lost events.
+  // Android hide-keyboard gesture handling.
   const [hideGesture, setHideGesture] = createSignal(false);
   const [hideGestureDockTop, setHideGestureDockTop] = createSignal<number | null>(null);
+
   let hideGestureTimer: ReturnType<typeof setTimeout> | undefined;
+
   const cancelHideGesture = () => {
     if (hideGestureTimer !== undefined) clearTimeout(hideGestureTimer);
     hideGestureTimer = undefined;
     setHideGestureDockTop(null);
     setHideGesture(false);
   };
+
   onCleanup(() => {
     if (hideGestureTimer !== undefined) clearTimeout(hideGestureTimer);
   });
 
   const visible = () =>
     (!!focusedEditorCommandBridge() &&
-      (isMobilePlatform ? (keyboardVisible() || focusedFallback()) : desktopFocused())) ||
+      (isMobilePlatform
+        ? keyboardVisible() || focusedFallback()
+        : desktopFocused())) ||
     (isMobilePlatform && hideGesture());
 
-  // Publish the toolbar's on-screen top as a CSS var so the fixed help "?" FAB
-  // (and any other bottom-anchored chrome) can lift ABOVE it instead of
-  // overlapping. Re-runs when the dock position or visibility changes; measures
-  // the real rendered box (robust to whatever the keyboard does to the viewport).
+  // Publish the toolbar position for other mobile interface elements.
   createEffect(() => {
     const shown = isMobilePlatform && visible();
-    dockTop(); // re-measure when the keyboard/dock moves
+    dockTop();
+
     const root = typeof document !== "undefined" ? document.documentElement : null;
     if (!root) return;
-    // The editing dock replaces the bottom navigation row while it is up.
+
     root.toggleAttribute("data-mobile-editing-dock", shown);
+
     if (!shown) {
       root.style.removeProperty("--mobile-kb-toolbar-lift");
       return;
     }
+
     requestAnimationFrame(() => {
-      // The dock may have hidden since (the keyboard closed in the same
-      // resize); measuring it now would publish a lift from a 0 top (GH #716).
       if (!toolbarRef || !visible()) return;
+
       const top = toolbarRef.getBoundingClientRect().top;
       const lift = Math.max(0, window.innerHeight - top) + 8;
+
       root.style.setProperty("--mobile-kb-toolbar-lift", `${lift}px`);
       revealFocusedEditorAboveToolbar(top);
     });
   });
+
   onCleanup(() => {
     if (typeof document !== "undefined") {
       document.documentElement.style.removeProperty("--mobile-kb-toolbar-lift");
@@ -272,61 +289,72 @@ export function MobileKeyboardToolbar(): JSX.Element {
           bottom: "0px",
           transform: "none",
         };
+
   const keepEditorFocus = (e: Event) => e.preventDefault();
 
-  // A structural command can briefly unregister the editor and retarget the
-  // browser's compatibility click (#495/#496). Own the completed pointer at
-  // toolbar scope, and consume its click before any new target can act. A new
-  // primary pointerdown starts a new gesture; keyboard/AT clicks have detail 0.
-  // No elapsed-time window may suppress an independent second activation.
+  // Prevent a pointer action from also firing its compatibility click.
   let completedPointer: number | null = null;
+
   onMount(() => {
-    if (!isMobilePlatform) return;
     const beginPointer = (e: PointerEvent) => {
       if (e.isPrimary) completedPointer = null;
     };
+
     const consumeClick = (e: MouseEvent) => {
       if (completedPointer === null || e.detail === 0) return;
+
       const clickPointer = "pointerId" in e ? (e as PointerEvent).pointerId : null;
       if (clickPointer !== null && clickPointer !== completedPointer) return;
+
       completedPointer = null;
       e.preventDefault();
       e.stopImmediatePropagation();
     };
+
     document.addEventListener("pointerdown", beginPointer, true);
     document.addEventListener("click", consumeClick, true);
+
     onCleanup(() => {
       document.removeEventListener("pointerdown", beginPointer, true);
       document.removeEventListener("click", consumeClick, true);
     });
   });
 
-  // Pointer-up remains the primary activation path: iOS WebKit can omit the
-  // compatibility click after our focus-preserving canceled pointerdown (#434).
   function tapActivation(run: () => void) {
     let pointer: number | null = null;
+
     return {
       onPointerDown(e: PointerEvent) {
         e.preventDefault();
+
         if (!e.isPrimary || e.button !== 0) return;
+
         pointer = e.pointerId;
         (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
       },
+
       onPointerUp(e: PointerEvent) {
         if (pointer !== e.pointerId) return;
+
         pointer = null;
         completedPointer = e.pointerId;
+
         const box = (e.currentTarget as HTMLElement).getBoundingClientRect();
-        // Sliding off cancels activation, including a possible trailing click.
-        // jsdom has no layout and reports a zero box.
+
         const off =
           (box.width > 0 || box.height > 0) &&
-          (e.clientX < box.left || e.clientX > box.right || e.clientY < box.top || e.clientY > box.bottom);
+          (e.clientX < box.left ||
+            e.clientX > box.right ||
+            e.clientY < box.top ||
+            e.clientY > box.bottom);
+
         if (!off) run();
       },
+
       onPointerCancel(e: PointerEvent) {
         if (pointer === e.pointerId) pointer = null;
       },
+
       onClick(e: MouseEvent) {
         e.preventDefault();
         e.stopPropagation();
@@ -340,30 +368,29 @@ export function MobileKeyboardToolbar(): JSX.Element {
       runGlobalCommand(action.command);
       return;
     }
+
     dispatchFocusedEditorCommand(action.command);
   };
+
   const beginHideGesture = (e: Event) => {
     e.preventDefault();
+
     if (hideGestureTimer !== undefined) clearTimeout(hideGestureTimer);
+
     setHideGestureDockTop(dockTop());
     hideGestureTimer = setTimeout(cancelHideGesture, 700);
     setHideGesture(true);
     blurFocusedEditor();
   };
+
   const endHideGesture = () => {
-    // An AT/keyboard activation arrives without a pointer gesture, and still
-    // needs the blur itself.
     if (!hideGesture()) blurFocusedEditor();
     cancelHideGesture();
   };
-  // The hide button's own two-phase gesture starts on pointerdown, so it keeps
-  // that handler and borrows only the completion half of tapActivation.
+
   const hideTap = tapActivation(endHideGesture);
 
   return (
-    // The toolbar belongs to the mobile shell, not a particular editor DOM node.
-    // Preserve its buttons and horizontal scroll through bridge handoffs; only
-    // its visibility follows focus/keyboard state.
     <Show when={isMobilePlatform || desktopFocused()}>
       <div
         ref={toolbarRef}
@@ -375,53 +402,74 @@ export function MobileKeyboardToolbar(): JSX.Element {
         style={{ ...style(), display: visible() ? undefined : "none" }}
       >
         <div class="mobile-keyboard-toolbar-strip" data-lenis-prevent>
-          <For each={isMobilePlatform ? ACTIONS : ACTIONS.filter((action) => action.command !== "editor/capture-photo")}>
+          <For
+            each={
+              isMobilePlatform
+                ? ACTIONS
+                : ACTIONS.filter(
+                    (action) => action.command !== "editor/capture-photo",
+                  )
+            }
+          >
             {(action) => {
               const tap = tapActivation(() => run(action));
+
               return (
-              <button
-                type="button"
-                class="mobile-keyboard-toolbar-btn"
-                classList={{ recording: action.icon === "mic" && isRecordingAudio() }}
-                title={action.icon === "mic" && isRecordingAudio() ? t("mobile-keyboard-toolbar-stop-recording") : render(action.label)}
-                aria-label={action.icon === "mic" && isRecordingAudio() ? t("mobile-keyboard-toolbar-stop-recording") : render(action.label)}
-                onPointerDown={tap.onPointerDown}
-                onPointerUp={tap.onPointerUp}
-                onPointerCancel={tap.onPointerCancel}
-                onMouseDown={keepEditorFocus}
-                onClick={tap.onClick}
-              >
-                <Show
-                  when={action.icon === "mic" && isRecordingAudio()}
-                  fallback={<Icon name={action.icon} />}
+                <button
+                  type="button"
+                  class="mobile-keyboard-toolbar-btn"
+                  classList={{
+                    recording: action.icon === "mic" && isRecordingAudio(),
+                  }}
+                  title={
+                    action.icon === "mic" && isRecordingAudio()
+                      ? t("mobile-keyboard-toolbar-stop-recording")
+                      : render(action.label)
+                  }
+                  aria-label={
+                    action.icon === "mic" && isRecordingAudio()
+                      ? t("mobile-keyboard-toolbar-stop-recording")
+                      : render(action.label)
+                  }
+                  onPointerDown={tap.onPointerDown}
+                  onPointerUp={tap.onPointerUp}
+                  onPointerCancel={tap.onPointerCancel}
+                  onMouseDown={keepEditorFocus}
+                  onClick={tap.onClick}
                 >
-                  <Icon name="stop-recording" />
-                </Show>
-              </button>
+                  <Show
+                    when={action.icon === "mic" && isRecordingAudio()}
+                    fallback={<Icon name={action.icon} />}
+                  >
+                    <Icon name="stop-recording" />
+                  </Show>
+                </button>
               );
             }}
           </For>
         </div>
-        <button
-          type="button"
-          class="mobile-keyboard-toolbar-btn mobile-keyboard-toolbar-hide"
-          title={t("mobile-keyboard-toolbar-hide-keyboard")}
-          aria-label={t("mobile-keyboard-toolbar-hide-keyboard")}
-          onPointerDown={(e) => {
-            beginHideGesture(e);
-            hideTap.onPointerDown(e);
-          }}
-          onPointerUp={hideTap.onPointerUp}
-          onPointerCancel={hideTap.onPointerCancel}
-          onMouseDown={keepEditorFocus}
-          onClick={hideTap.onClick}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="3" y="5" width="18" height="10" rx="2" />
-            <path d="M7 9h.01M11 9h.01M15 9h.01M8 12h8M8 18l4 3 4-3" />
-          </svg>
-        </button>
-        <Show when={isMobilePlatform}> 
+
+        <Show when={isMobilePlatform}>
+          <button
+            type="button"
+            class="mobile-keyboard-toolbar-btn mobile-keyboard-toolbar-hide"
+            title={t("mobile-keyboard-toolbar-hide-keyboard")}
+            aria-label={t("mobile-keyboard-toolbar-hide-keyboard")}
+            onPointerDown={(e) => {
+              beginHideGesture(e);
+              hideTap.onPointerDown(e);
+            }}
+            onPointerUp={hideTap.onPointerUp}
+            onPointerCancel={hideTap.onPointerCancel}
+            onMouseDown={keepEditorFocus}
+            onClick={hideTap.onClick}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="5" width="18" height="10" rx="2" />
+              <path d="M7 9h.01M11 9h.01M15 9h.01M8 12h8M8 18l4 3 4-3" />
+            </svg>
+          </button>
+        </Show>
       </div>
     </Show>
   );
