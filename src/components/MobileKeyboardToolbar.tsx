@@ -262,12 +262,16 @@ export function MobileKeyboardToolbar(): JSX.Element {
     }
   });
 
-  const style = () => ({
-    // The viewport grows while the keyboard closes. Keep the button under the
-    // active pointer until its trailing click is consumed; otherwise a mounted
-    // toolbar can still move away and expose the note before pointer-up.
-    top: `calc(${Math.max(0, hideGestureDockTop() ?? dockTop())}px - var(--system-inset-bottom))`,
-  });
+  const style = () =>
+    isMobilePlatform
+      ? {
+          top: `calc(${Math.max(0, hideGestureDockTop() ?? dockTop())}px - var(--system-inset-bottom))`,
+        }
+      : {
+          top: "auto",
+          bottom: "0px",
+          transform: "none",
+        };
   const keepEditorFocus = (e: Event) => e.preventDefault();
 
   // A structural command can briefly unregister the editor and retarget the
