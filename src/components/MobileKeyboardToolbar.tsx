@@ -421,6 +421,7 @@ export function MobileKeyboardToolbar(): JSX.Element {
             <path d="M7 9h.01M11 9h.01M15 9h.01M8 12h8M8 18l4 3 4-3" />
           </svg>
         </button>
+        <Show when={isMobilePlatform}> 
       </div>
     </Show>
   );
