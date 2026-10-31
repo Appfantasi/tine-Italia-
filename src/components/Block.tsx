@@ -2375,11 +2375,18 @@ export function Editor(props: { id: string; propertySession?: ReturnType<typeof 
       case "editor/upload-asset":
         uploadAsset();
         return true;
-      case "editor/capture-photo":
-        void capturePhotoCmd();
-        return true;
+            case "editor/capture-photo":
+        if (isMobilePlatform) {
+          void capturePhotoCmd();
+          return true;
+        }
+        return false;
       case "editor/voice-memo":
-        void voiceMemoToggle();
+        if (isMobilePlatform) {
+          void voiceMemoToggle();
+        } else {
+          void desktopVoiceMemoToggle();
+        }
         return true;
       case "editor/open-date-picker":
         openScheduledDatePicker();
