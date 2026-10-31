@@ -140,7 +140,22 @@ export function MobileKeyboardToolbar(): JSX.Element {
     setKeyboardVisible(keyboardUp);
     setFocusedFallback(focused && !keyboardSeen);
   };
+    onMount(() => {
+    if (isMobilePlatform) return;
 
+    const updateDesktopFocus = () => {
+      setTimeout(() => setDesktopFocused(activeEditorHasFocus()), 0);
+    };
+
+    window.addEventListener("focusin", updateDesktopFocus);
+    window.addEventListener("focusout", updateDesktopFocus);
+    updateDesktopFocus();
+
+    onCleanup(() => {
+      window.removeEventListener("focusin", updateDesktopFocus);
+      window.removeEventListener("focusout", updateDesktopFocus);
+    });
+  });
   onMount(() => {
     if (!isMobilePlatform) return;
     const vv = window.visualViewport;
