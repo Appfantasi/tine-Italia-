@@ -371,7 +371,7 @@ export function MobileKeyboardToolbar(): JSX.Element {
         style={{ ...style(), display: visible() ? undefined : "none" }}
       >
         <div class="mobile-keyboard-toolbar-strip" data-lenis-prevent>
-          <For each={ACTIONS}>
+          <For each={isMobilePlatform ? ACTIONS : ACTIONS.filter((action) => action.command !== "editor/capture-photo")}>
             {(action) => {
               const tap = tapActivation(() => run(action));
               return (
